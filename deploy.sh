@@ -58,23 +58,20 @@ check_root() {
 find_env_file() {
     log_info "Searching for .env file..."
 
-    local search_paths=("$APP_PATH/.env" "./.env" "/tmp/.env" "/root/.env" "$HOME/.env")
+    local search_paths=("./.env" "/tmp/.env" "/root/.env" "$HOME/.env" "$APP_PATH/.env")
 
     for path in "${search_paths[@]}"; do
         if [[ -f "$path" ]]; then
             log_info "Found .env at $path"
-            mkdir -p "$APP_PATH"
-            if [[ "$path" != "$APP_PATH/.env" ]]; then
-                cp "$path" "$APP_PATH/.env"
-            fi
-            chown root:root "$APP_PATH/.env"
-            chmod 600 "$APP_PATH/.env"
-            log_success ".env staged at $APP_PATH/.env"
+            # Stage to /tmp so git clone can't wipe it
+            cp "$path" /tmp/.secondbrain-env-staged
+            chmod 600 /tmp/.secondbrain-env-staged
+            log_success ".env staged from $path"
             return 0
         fi
     done
 
-    log_error ".env not found. Place it at /tmp/.env, /root/.env, or current directory before running."
+    log_error ".env not found. Place it at ./.env, /tmp/.env, or /root/.env before running."
 }
 
 ###############################################################################
@@ -183,9 +180,12 @@ validate_env() {
     log_info "Validating environment configuration..."
 
     # Copy the staged .env into the deployment directory
-    local staged_env="/opt/secondbrain-api/.env"
-    if [[ -f "$staged_env" && "$staged_env" != "$APP_PATH/.env" ]]; then
-        cp "$staged_env" "$APP_PATH/.env"
+    if [[ -f /tmp/.secondbrain-env-staged ]]; then
+        cp /tmp/.secondbrain-env-staged "$APP_PATH/.env"
+        chown root:root "$APP_PATH/.env"
+        chmod 600 "$APP_PATH/.env"
+        rm -f /tmp/.secondbrain-env-staged
+        log_success ".env copied into $APP_PATH"
     fi
 
     local env_file="$APP_PATH/.env"
