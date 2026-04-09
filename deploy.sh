@@ -23,7 +23,7 @@
 set -euo pipefail
 
 # ─── Configuration ───────────────────────────────────────────────────────────
-REPO_URL="${REPO_URL:-https://github.com/Arjun101105/secondBrain.git}"
+REPO_URL="${REPO_URL:-https://github.com/Arjun101105/SecondBrain-BE.git}"
 APP_PATH="/opt/secondbrain-api"
 APP_NAME="secondbrain-api"
 DOMAIN="${DOMAIN:-api.secondbrain.arjun10.tech}"
