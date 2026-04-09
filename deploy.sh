@@ -195,7 +195,7 @@ validate_env() {
     fi
 
     # Check required vars
-    grep -q "MONGO_URI=" "$env_file"  || log_error "MONGO_URI not found in .env"
+    grep -E -q "MONGO(DB)?_URI\s*=" "$env_file"  || log_error "MONGO_URI or MONGODB_URI not found in .env"
     grep -q "JWT_SECRET=" "$env_file" || log_error "JWT_SECRET not found in .env"
 
     # Ensure production defaults
