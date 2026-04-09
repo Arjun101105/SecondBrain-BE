@@ -7,7 +7,8 @@ export async function connectDB() {
     dotenv.config({ path: '.env.local' });
     dotenv.config(); // fallback
     
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/secondBrain';
+    // Support both MONGO_URI and MONGODB_URI
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/secondBrain';
     console.log('🔌 Connecting to MongoDB...');
     await mongoose.connect(mongoUri);
     console.log('✅ MongoDB connected successfully');
